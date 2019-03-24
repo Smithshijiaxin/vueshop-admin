@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import request from '../../utils/request.js'
 export default {
   name: 'Longin',
   data () {
@@ -50,13 +50,16 @@ export default {
     },
     async login () {
       const loginfrom = this.LoginFrom
-      const { data, meta } = (await axios.post('http://localhost:8888/api/private/v1/login', loginfrom)).data
-      console.log(data, meta)
+      const { data, meta } = (await request.post('/login', loginfrom)).data
       if (meta.status === 200) {
         this.$message({
           message: '登录成功',
           type: 'success'
         })
+        window.localStorage.setItem('token', data.token)
+        // this.$router.replace('/')
+        const redirectUrl = this.$route.query.redirect || '/'
+        this.$router.replace(redirectUrl)
       } else {
         this.$message.error(`登录失败: ${meta.msg}`)
       }
